@@ -19,12 +19,16 @@ for(const item of items){
 // console.log(item);
 
 //create button
-const button = document.createElement("button");
-button.classList="btn";
-button.innerText= item.category;
+const buttonContainer = document.createElement("div");
+buttonContainer.innerHTML=`
+<button id="btn-${item.category_id}" onclick="loadCatagoryVideo(${item.category_id})" class="btn btn-catagory">
+${item.category}
+</button>
+`;
+
 
 //add button to catagoriesContainer;
-catagoriesContainer.append(button);
+catagoriesContainer.append(buttonContainer);
 }
 };
 loadCatagorie();
@@ -40,6 +44,22 @@ const loadvideo =() =>{
 
 const displayvideo =(items) =>{
 const videoContainer = document.getElementById('videos');
+videoContainer.innerHTML="";
+
+if(items.length==0){
+    videoContainer.classList.remove("grid");
+    videoContainer.innerHTML=`
+    <div class="min-h-[300px] flex flex-col justify-center items-center bg-red-200 ">
+    <img src="ph-tube-resources/Icon.png" />
+    <h2 class="text-center text-xl font-bold">No content here in this category</h2>
+    </div>
+      `;
+    return;
+}
+else{
+    videoContainer.classList.add("grid");
+}
+
 //using for of loop
 for(const item of items){
 console.log(item);
@@ -49,8 +69,8 @@ card.classList="card card-compact";
 card.innerHTML=`
  <figure class="h-[200px] relative">
     <img
-      src=${item.thumbnail} class="h-full w-full object-cover">
-      ${item.others.posted_date?.length==0?"": `<span class="absolute right-2 bottom-2 bg-black text-white rounded p-1">${setTime(item.others.posted_date)}</span>`}
+      src=${item.thumbnail} class="h-full w-full  object-cover">
+      ${item.others.posted_date?.length==0?"": `<span class="absolute right-2 bottom-2 bg-black text-white rounded p-1 text-sm">${setTime(item.others.posted_date)}</span>`}
       
   </figure>
   <div class="px-0 py-2 flex gap-2">
@@ -81,4 +101,27 @@ function setTime(time){
     rtime=rtime%60;
 
 return `${hr} hr ${min} min ${rtime} sec ago`;
+}
+
+//loadCatagoryVideo() function for onclick button
+const loadCatagoryVideo =(id) =>{
+    // alert(id);
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+    .then(res=>res.json())
+.then(data=>{
+    //class e button deactive
+    const activebtnClass= document.getElementsByClassName('btn-catagory');
+    // console.log(activebtnClass);
+    for(let button of activebtnClass){
+        button.classList.remove("bg-red-400");
+        button.classList.remove("text-white");
+    }
+    //id er class active
+    const activebtn= document.getElementById(`btn-${id}`);
+    // console.log(activebtn);
+    activebtn.classList.add("bg-red-400");
+    activebtn.classList.add("text-white");
+    displayvideo(data.category)
+})
+.catch(err=>console.error(err))
 }
