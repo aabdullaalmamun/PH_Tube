@@ -62,7 +62,7 @@ else{
 
 //using for of loop
 for(const item of items){
-console.log(item);
+// console.log(item);
 //creating card
 const card= document.createElement('div');
 card.classList="card card-compact";
@@ -83,7 +83,7 @@ card.innerHTML=`
     ${item.authors[0].verified === true? `<img class="w-5 object-cover" src="https://img.icons8.com/?size=48&id=98A4yZTt9abw&format=png">`: ""}
     </div>
     
-    <P> </P>
+    <P><button onclick="loadDetails('${item.video_id}')" class="btn btn-sm btn-error">Details</button></P>
     </div>
   </div>
 `;
@@ -125,3 +125,24 @@ const loadCatagoryVideo =(id) =>{
 })
 .catch(err=>console.error(err))
 }
+
+//load Details function
+const loadDetails= (videoID)=>{
+    let url=`https://openapi.programming-hero.com/api/phero-tube/video/${videoID}`
+    fetch(url)
+    .then(res=>res.json())
+    .then(data=>displayDetails(data.video))
+    .catch(err=>console.log(err));
+}
+const displayDetails= (video)=>{
+console.log(video);
+const detailContainer = document.getElementById("modal-content");
+detailContainer.innerHTML=`
+<img src=${video.thumbnail}/>
+<P>${video.description}</P>
+`;
+//way-1
+// document.getElementById("showModalData").click();
+//way-2
+document.getElementById("customModal").showModal();
+};
